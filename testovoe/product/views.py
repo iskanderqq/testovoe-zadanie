@@ -7,7 +7,9 @@ import datetime
 def get_product_list():
     products = Product.objects.annotate(num_lessons=Count('lesson'))
     data = []
+    #Проходимся по всем продуктам
     for product in products:
+        #Добавляем в список словарь из данных для каждого продукта
         data.append({
             'creator': product.creator,
             'name': product.name,
@@ -21,7 +23,9 @@ def get_product_list():
 def get_lessons(request, product_id):
     lessons = Lesson.objects.filter(product_id=product_id)
     data = []
+    # Проходимся по всем продуктам
     for lesson in lessons:
+        # Добавляем в список словарь из данных для каждого продукта
         data.append({
             'name': lesson.name,
             'url': lesson.url
@@ -33,9 +37,14 @@ def user_to_group(request, product_id):
         groups = Group.objects.filter(product_id=product_id)
         product = Product.objects.get(id=product_id)
 
+        #Проверяем стартовал ли продукт
         if product.date_of_start > datetime.timezone.now().date():
+            #Проходим через цикл по всем группам
             for group in groups:
+                #Получаем кол-во студентов в группе
                 current_users_count = group.students.count()
+                #Заполняем до максимального значения
                 if current_users_count < group.product.max_users:
-                    group.students.id = request.user.id
+                    group.students.id.add(request.user.id)
                     #Дальнейшее добавление пользователя
+
